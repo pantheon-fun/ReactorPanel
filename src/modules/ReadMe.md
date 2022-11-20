@@ -1,5 +1,21 @@
 Example:
 
+[x] Led Strip
+
+[ ] IR Module
+
+[X] Wire Connect
+
+[ ] Tumblers
+
+[ ] Rotator and Button
+
+[ ] LED & KEY
+
+[ ] 
+
+# LED STRIP
+```
 LedStrip strip = LedStrip(LED_NUM, LED_PIN);
 
 strip.RED;
@@ -19,5 +35,27 @@ uint32_t color = strip.Color(128, 128, 255);
 strip.setPixelColor(5, color);
 
 strip.show();
-
+```
 Больше информации в описании функций
+
+# WIRE CONNECT
+
+```
+Wires wire_connect = Wires(
+    {*5 пинов первой группы*},
+    {*5 пинов второй группы*},
+    {*5 номеров светодиодов первой группы*},
+    {*5 номеров светодиодов второй группы*},
+    номер светодиода обозначающего финал игры,
+    LedStrip объект
+)
+```
+
+```
+wire_connect.Wires_init();
+
+if(wire_connect.Wires_loop()){
+    wire_connect.Wires_done();
+}
+```
+

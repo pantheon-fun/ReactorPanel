@@ -1,5 +1,6 @@
 #include <Arduino.h>
-#include "modules/led_strip.cpp"
+#include "modules/led_strip.h"
+#include "modules/wires.h"
 #include <TM1638.h>
 #include <IRremote.h>
 #include <GyverTimers.h>
