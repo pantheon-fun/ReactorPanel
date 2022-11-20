@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include <Adafruit_NeoPixel.h>
+#include "modules/led_strip.cpp"
 #include <TM1638.h>
 #include <IRremote.h>
 #include <GyverTimers.h>
@@ -29,18 +29,21 @@
 #define LED_NUM 30
 
 
+LedStrip strip = LedStrip(LED_NUM, LED_PIN);
 
 
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(LED_NUM, LED_PIN, NEO_GRB + NEO_KHZ800);
+/*
 
-#define RED strip.gamma32(strip.Color(255, 0, 0))
-#define GREEN strip.gamma32(strip.Color(0, 255, 0))
-#define BLUE strip.gamma32(strip.Color(0, 0, 255))
-#define FUKSIA strip.gamma32(strip.Color(255, 0, 255))
-#define WHITE strip.gamma32(strip.Color(255, 255, 255))
-#define YELLOW strip.gamma32(strip.Color(255, 255, 0))
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(LED_NUM, LED_PIN, NEO_GRB + NEO_KHZ800); // MOVED
 
-void smoothSetPixelColor(int n, int r, int g, int b, int steps=30, int del=5){
+#define strip.RED strip.gamma32(strip.Color(255, 0, 0))               // MOVED
+#define strip.GREEN strip.gamma32(strip.Color(0, 255, 0))             // MOVED
+#define strip.BLUE strip.gamma32(strip.Color(0, 0, 255))              // MOVED
+#define strip.FUKSIA strip.gamma32(strip.Color(255, 0, 255))          // MOVED
+#define strip.WHITE strip.gamma32(strip.Color(255, 255, 255))         // MOVED
+#define strip.YELLOW strip.gamma32(strip.Color(255, 255, 0))          // MOVED
+
+void strip.setSPixelColor(int n, int r, int g, int b, int steps=30, int del=5){
     uint32_t color = strip.getPixelColor(n);
     uint8_t r_now = color >> 16;
     uint8_t g_now = color >> 8;
@@ -62,6 +65,8 @@ void smoothSetPixelColor(int n, int r, int g, int b, int steps=30, int del=5){
     strip.setPixelColor(n, strip.gamma32(strip.Color(r, g, b)));
     strip.show();
 }
+
+*/
 
 
 uint8_t power_leds[5] = {25, 26, 27, 28, 29};
@@ -149,7 +154,7 @@ int ir_get(int id=-1){
    
     int inner_id = -1;
     IrReceiver.resume();
-    debug_msg("Entered ir_get");
+    debug_msg("Entestrip.RED ir_get");
     while(inner_id < 0){
         if(IrReceiver.decode()){
             Serial.println("Got Shot");
@@ -181,8 +186,8 @@ int ir_get(int id=-1){
 
 int wr_gr_1[5] = {34, 36, 38, 40, 42};
 int wr_gr_2[5] = {35, 37, 39, 41, 43};
-uint32_t wr_colors_1[5] = {RED, GREEN, BLUE, FUKSIA, WHITE};
-uint32_t wr_colors_2[5] = {RED, GREEN, BLUE, FUKSIA, WHITE};
+uint32_t wr_colors_1[5] = {strip.RED, strip.GREEN, strip.BLUE, strip.FUKSIA, strip.WHITE};
+uint32_t wr_colors_2[5] = {strip.RED, strip.GREEN, strip.BLUE, strip.FUKSIA, strip.WHITE};
 
 int wr_colors_1_leds[5] = {23, 22, 21, 20, 19};
 int wr_colors_2_leds[5] = {14, 15, 16, 17, 18};
@@ -285,12 +290,12 @@ void wr_done(){
             int off = i-1;
             if(on == 10){on = 0;}
             if(off == -1){off = 9;}
-            smoothSetPixelColor(wr_colors[off], 0, 0, 0, 30, 2);
-            smoothSetPixelColor(wr_colors[on], 0, 255, 0, 30, 2);
+            strip.setSPixelColor(wr_colors[off], 0, 0, 0, 30, 2);
+            strip.setSPixelColor(wr_colors[on], 0, 255, 0, 30, 2);
         }
     }
     for(int i = 0; i < 10; i++){
-        smoothSetPixelColor(wr_colors[i], 0, 255, 0, 30, 2);
+        strip.setSPixelColor(wr_colors[i], 0, 255, 0, 30, 2);
     }
     strip.setPixelColor(13, strip.Color(0,0,0));
 }
@@ -304,8 +309,8 @@ uint8_t tb_pins[10] = {25, 27, 29, 31, 33,
                         32, 30, 28, 26, 24};
 uint8_t tb_leds[10] = {5, 4, 3, 2, 1,
                         10, 9, 8, 7, 6};
-uint32_t tb_colors[10] = { RED, GREEN, BLUE, FUKSIA, WHITE,
-                            RED, GREEN, BLUE, FUKSIA, WHITE};
+uint32_t tb_colors[10] = { strip.RED, strip.GREEN, strip.BLUE, strip.FUKSIA, strip.WHITE,
+                            strip.RED, strip.GREEN, strip.BLUE, strip.FUKSIA, strip.WHITE};
 bool tb_data[10];
 
 
@@ -336,8 +341,8 @@ bool tb_start(){
 bool tb_mode1(){
     debug_msg("Started tb_mode1");
     // mode id G->G
-    strip.setPixelColor(side_leds[0], GREEN);
-    strip.setPixelColor(side_leds[1], GREEN);
+    strip.setPixelColor(side_leds[0], strip.GREEN);
+    strip.setPixelColor(side_leds[1], strip.GREEN);
 
     bool _done = false;
     while(!_done){
@@ -361,7 +366,7 @@ bool tb_mode1(){
 bool tb_mode2(){
     debug_msg("Started tb_mode2");
     static uint32_t tb2_chosen = tb_colors[random(0,10)];
-    strip.setPixelColor(side_leds[0], BLUE);
+    strip.setPixelColor(side_leds[0], strip.BLUE);
     strip.setPixelColor(side_leds[1], tb2_chosen);
     strip.show();
 
@@ -391,7 +396,7 @@ bool tb_mode2(){
 
 bool tb_mode3(){
     debug_msg("Started tb_mode3");
-    strip.setPixelColor(side_leds[0], GREEN);
+    strip.setPixelColor(side_leds[0], strip.GREEN);
     uint8_t sum = 0;
     
     while(sum != 21){
@@ -400,15 +405,15 @@ bool tb_mode3(){
             if(digitalRead(tb_pins[i]) == tb_data[i]){
                 strip.setPixelColor(tb_leds[i], tb_colors[i]);
                 
-                if(tb_colors[i] == RED){
+                if(tb_colors[i] == strip.RED){
                     sum += 5;
-                } else if(tb_colors[i] == BLUE){
+                } else if(tb_colors[i] == strip.BLUE){
                     sum += 7;
-                } else if(tb_colors[i] == GREEN){
+                } else if(tb_colors[i] == strip.GREEN){
                     sum += 4;
-                } else if(tb_colors[i] == FUKSIA){
+                } else if(tb_colors[i] == strip.FUKSIA){
                     sum += 6;
-                } else if(tb_colors[i] == WHITE){
+                } else if(tb_colors[i] == strip.WHITE){
                     sum += 1;
                 }
 
@@ -419,9 +424,9 @@ bool tb_mode3(){
         strip.show();
 
         if(sum > 21){
-            strip.setPixelColor(side_leds[1], BLUE);
+            strip.setPixelColor(side_leds[1], strip.BLUE);
         } else {
-            strip.setPixelColor(side_leds[1], RED);
+            strip.setPixelColor(side_leds[1], strip.RED);
         }
         strip.show();
     }
@@ -449,12 +454,12 @@ void tb_done(){
             int off = i-1;
             if(on == 10){on = 0;}
             if(off == -1){off = 9;}
-            smoothSetPixelColor(tb_leds[off], 0, 0, 0, 30, 2);
-            smoothSetPixelColor(tb_leds[on], 0, 255, 0, 30, 2);
+            strip.setSPixelColor(tb_leds[off], 0, 0, 0, 30, 2);
+            strip.setSPixelColor(tb_leds[on], 0, 255, 0, 30, 2);
         }
     }
     for(int i = 0; i < 10; i++){
-        smoothSetPixelColor(tb_leds[i], 0, 255, 0, 30, 2);
+        strip.setSPixelColor(tb_leds[i], 0, 255, 0, 30, 2);
     }
 }
 
@@ -496,7 +501,7 @@ bool rb_loop(int mode=0){
 
     while(!_done){
         int16_t rb_pos = analogRead(rb_pot);
-        int green = 0;
+        int GREEN = 0;
 
         if(abs(rb_pos - rb_pot_target) <= rb_pot_diff){
             _done = true;
@@ -504,14 +509,14 @@ bool rb_loop(int mode=0){
             _done = false;
         }
 
-        green = 255 - (abs(rb_pos-rb_pot_target));
-        if(green < 0){
-            green = 0;
+        GREEN = 255 - (abs(rb_pos-rb_pot_target));
+        if(GREEN < 0){
+            GREEN = 0;
         }
 
-        strip.setPixelColor(side_leds[1], 255-green, green, 0);
+        strip.setPixelColor(side_leds[1], strip.Color(255-GREEN, GREEN, 0));
         if(_done){
-            strip.setPixelColor(side_leds[1], FUKSIA);
+            strip.setPixelColor(side_leds[1], strip.FUKSIA);
         }
         strip.show();
 
@@ -527,14 +532,14 @@ bool rb_loop(int mode=0){
                 _done = false;
             }
         }
-        Serial.println("rb_pos rb_target diff green");
+        Serial.println("rb_pos rb_target diff strip.GREEN");
         Serial.print(rb_pos);
         Serial.print(" ");
         Serial.print(rb_pot_target);
         Serial.print(" ");
         Serial.print(abs(rb_pos-rb_pot_target));
         Serial.print(" ");
-        Serial.println(green);
+        Serial.println(strip.GREEN);
 
     }
     
@@ -545,8 +550,8 @@ bool rb_loop(int mode=0){
 
 void rb_done(){
     for(int i = 0; i < 3; i++){
-        smoothSetPixelColor(side_leds[1], 0, 0, 0, 30, 5);
-        smoothSetPixelColor(side_leds[1], 0, 255, 0, 30, 5);
+        strip.setSPixelColor(side_leds[1], 0, 0, 0, 30, 5);
+        strip.setSPixelColor(side_leds[1], 0, 255, 0, 30, 5);
     }
 }
 
@@ -883,7 +888,7 @@ bool lk_loop(int mode){
 void count_power(){
     /*
         power [0; 15]
-        0 - RED(1-5) - YELLOW(1-5) - GREEN(1-5)
+        0 - strip.RED(1-5) - strip.YELLOW(1-5) - strip.GREEN(1-5)
     */
    static uint8_t counter = 0;
    if(power > counter){
@@ -892,11 +897,11 @@ void count_power(){
 
 
    if(counter > 0 && counter <= 5){
-        smoothSetPixelColor(power_leds[counter-1], 255, 0, 0, 30, 10);
+        strip.setSPixelColor(power_leds[counter-1], 255, 0, 0, 30, 10);
    } else if(counter > 5 && counter <= 10){
-        smoothSetPixelColor(power_leds[counter-6], 255, 255, 0, 30, 10);
+        strip.setSPixelColor(power_leds[counter-6], 255, 255, 0, 30, 10);
    } else if(counter > 10 && counter <= 15){
-        smoothSetPixelColor(power_leds[counter-11], 0, 255, 0, 30, 10);
+        strip.setSPixelColor(power_leds[counter-11], 0, 255, 0, 30, 10);
    }
    strip.show();
 
@@ -914,11 +919,11 @@ void setup(){
     for(int i = 0; i < 10; i++){
         pinMode(tb_pins[i], INPUT_PULLUP);
     }
-    strip.setBrightness(128);
+    //strip.setBrightness(128);
     Serial.begin(9600);
     ir_start();
-    strip.begin();
-    strip.setBrightness(128);
+    //strip.begin();
+    //strip.setBrightness(128);
     randomSeed(millis() + analogRead(A3));
     int counter = 0;
     for(int i = 0; i < 10; i++){
@@ -929,11 +934,11 @@ void setup(){
     if(counter > 7){hardmode = true;}
     uint32_t set_color;
     if(easymode){
-        set_color = GREEN;
+        set_color = strip.GREEN;
     } else if(hardmode){
-        set_color = RED;
+        set_color = strip.RED;
     } else {
-        set_color = YELLOW;
+        set_color = strip.YELLOW;
     }
     for(int i = 0; i < LED_NUM + 3; i++){
         if(i < LED_NUM){
